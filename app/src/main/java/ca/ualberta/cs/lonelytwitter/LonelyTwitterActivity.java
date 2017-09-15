@@ -12,6 +12,7 @@ import java.util.List;
 
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.util.SparseBooleanArray;
@@ -25,15 +26,16 @@ import android.widget.TextView;
 
 public class LonelyTwitterActivity extends Activity {
 
+	// List of all MoodBase subobjects
 	private static List<MoodBase> MOOD_BASE_LIST;
-	// String that is at the end of all selected moods
-	private static final String SELECTED_IDENTIFIER = " (Selected)";
 
 	private static final String FILENAME = "file.sav";
 	private EditText bodyText;
 	private ListView oldTweetsList;
 	private ListView moodsListView;
 
+	// List of all moods that are selected for the current tweet
+	// Each element corresponds to an element ID in moodsListView
 	private List<Long> selectedMoods;
 	
 	/** Called when the activity is first created. */
@@ -110,7 +112,7 @@ public class LonelyTwitterActivity extends Activity {
 			String fileData = new String(date.toString() + " | " + text);
 			// Save data for all moods
 			for (MoodBase mood : moods){
-				fileData += " : " + mood.getRepresentation();
+				fileData += ", MOOD: " + mood.getRepresentation() + "(" + mood.getDate().toString() + ")";
 			}
 
 			fos.write(fileData.getBytes());
@@ -151,13 +153,13 @@ public class LonelyTwitterActivity extends Activity {
 
 				if (selectedMoods.contains(id)) {
 					selectedMoods.remove(id);
-					// remove the selected identifier from the text
-					if (text.getText().toString().contains(SELECTED_IDENTIFIER))
-						text.setText(text.getText().subSequence(0, text.length() - SELECTED_IDENTIFIER.length()));
+					// Unselect text and change colour
+					text.setTextColor(Color.GRAY);
 				}
 				else {
 					selectedMoods.add(id);
-					text.setText(text.getText() + SELECTED_IDENTIFIER);
+					// Colour the text green to signify that it is selected
+					text.setTextColor(Color.GREEN);
 				}
 
 			}

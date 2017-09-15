@@ -43,6 +43,12 @@
         android:layout_height="wrap_content"
         android:text="@string/save" />
 
+    <TextView
+        android:id="@+id/moodsTextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Moods" />
+
     <ListView
         android:id="@+id/moodsList"
         android:layout_width="match_parent"

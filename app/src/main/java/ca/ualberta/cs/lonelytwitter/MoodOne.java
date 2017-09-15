@@ -21,7 +21,7 @@ public class MoodOne extends MoodBase {
      */
     @Override
     public String getRepresentation() {
-        return "Mood One";
+        return "Happy";
     }
 
     @Override
