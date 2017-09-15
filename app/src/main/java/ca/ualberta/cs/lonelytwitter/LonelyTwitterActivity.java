@@ -149,17 +149,15 @@ public class LonelyTwitterActivity extends Activity {
 
 				TextView text = (TextView)view;
 
-				// TODO: add/remove * from view
 				if (selectedMoods.contains(id)) {
 					selectedMoods.remove(id);
 					// remove the selected identifier from the text
-				//	text.setText(text.getText().subSequence(0, text.length() - SELECTED_IDENTIFIER.length()));
-					text.setSelected(true);
+					if (text.getText().toString().contains(SELECTED_IDENTIFIER))
+						text.setText(text.getText().subSequence(0, text.length() - SELECTED_IDENTIFIER.length()));
 				}
 				else {
 					selectedMoods.add(id);
-				//	text.setText(text.getText() + SELECTED_IDENTIFIER);
-					text.setSelected(false);
+					text.setText(text.getText() + SELECTED_IDENTIFIER);
 				}
 
 			}
