@@ -55,6 +55,7 @@ public class LonelyTwitterActivity extends Activity {
 		saveButton.setOnClickListener(new View.OnClickListener() {
 
 			public void onClick(View v) {
+
 				setResult(RESULT_OK);
 				String text = bodyText.getText().toString();
 
@@ -66,7 +67,8 @@ public class LonelyTwitterActivity extends Activity {
 					tweetMoods.add(newMood);
 				}
 
-				saveInFile(text, new Date(System.currentTimeMillis()), tweetMoods);
+				Tweet tweet = new Tweet(text, new Date(System.currentTimeMillis()), tweetMoods);
+				saveInFile(tweet);
 				selectedMoods.clear();	// reset all modes associated with this tweet
 				finish();
 
@@ -105,17 +107,12 @@ public class LonelyTwitterActivity extends Activity {
 		return tweets.toArray(new String[tweets.size()]);
 	}
 	
-	private void saveInFile(String text, Date date, List<MoodBase> moods) {
+	private void saveInFile(Tweet tweet) {
 		try {
 			FileOutputStream fos = openFileOutput(FILENAME,
 					Context.MODE_APPEND);
-			String fileData = new String(date.toString() + " | " + text);
-			// Save data for all moods
-			for (MoodBase mood : moods){
-				fileData += ", MOOD: " + mood.getRepresentation() + "(" + mood.getDate().toString() + ")";
-			}
 
-			fos.write(fileData.getBytes());
+			fos.write(tweet.toString().getBytes());
 			fos.close();
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
