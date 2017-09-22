@@ -24,7 +24,7 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:text="@string/hello" />
-
+    
     <EditText
         android:id="@+id/body"
         android:layout_width="fill_parent"
@@ -42,18 +42,5 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:text="@string/save" />
-
-    <TextView
-        android:id="@+id/moodsTextView"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Moods" />
-
-    <ListView
-        android:id="@+id/moodsList"
-        android:layout_width="match_parent"
-        android:layout_height="36dp"
-        android:layout_weight="0.50"
-        android:visibility="visible" />
 
 </LinearLayout>

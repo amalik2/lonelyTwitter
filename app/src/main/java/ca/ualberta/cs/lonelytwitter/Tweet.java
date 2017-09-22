@@ -1,5 +1,4 @@
 package ca.ualberta.cs.lonelytwitter;
-
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -8,7 +7,7 @@ import java.util.List;
  * Created by malik2 on 9/14/17.
  */
 
-public class Tweet {
+public abstract class Tweet {
 
     private String message;
     private Date date;
@@ -52,9 +51,11 @@ public class Tweet {
     public String toString(){
         String fileData = new String(date.toString() + " | " + message);
         // Save data for all moods
-        for (MoodBase mood : selectedMoods){
+        /*for (MoodBase mood : selectedMoods){
             fileData += ", MOOD: " + mood.getRepresentation() + "(" + mood.getDate().toString() + ")";
-        }
+        }*/
         return fileData;
     }
+
+    public abstract Boolean isImportant();
 }

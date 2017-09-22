@@ -6,72 +6,64 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 import android.app.Activity;
 import android.content.Context;
-import android.graphics.Color;
 import android.os.Bundle;
-import android.util.Log;
-import android.util.SparseBooleanArray;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
-import android.widget.TextView;
+
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
 public class LonelyTwitterActivity extends Activity {
-
-	// List of all MoodBase subobjects
-	private static List<MoodBase> MOOD_BASE_LIST;
 
 	private static final String FILENAME = "file.sav";
 	private EditText bodyText;
 	private ListView oldTweetsList;
-	private ListView moodsListView;
 
-	// List of all moods that are selected for the current tweet
-	// Each element corresponds to an element ID in moodsListView
-	private List<Long> selectedMoods;
-	
+	private ArrayList<Tweet> tweets = new ArrayList<Tweet>();
+	private ArrayAdapter<Tweet> adapter;
+
 	/** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
-
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main);
 
 		bodyText = (EditText) findViewById(R.id.body);
 		Button saveButton = (Button) findViewById(R.id.save);
 		oldTweetsList = (ListView) findViewById(R.id.oldTweetsList);
-		moodsListView = (ListView) findViewById(R.id.moodsList);
-
-		initializeMoods();
 
 		saveButton.setOnClickListener(new View.OnClickListener() {
 
 			public void onClick(View v) {
-
 				setResult(RESULT_OK);
 				String text = bodyText.getText().toString();
 
-				// Added moods
-				List<MoodBase> tweetMoods = new ArrayList<MoodBase>();
-				for (long id : selectedMoods) {
-					MoodBase newMood = MOOD_BASE_LIST.get(((int) id)).clone();
-					newMood.setDate(new Date(System.currentTimeMillis()));
-					tweetMoods.add(newMood);
-				}
+				tweets.add(new NormalTweet(text));
+				adapter.notifyDataSetChanged();
+				saveInFile();
 
-				Tweet tweet = new Tweet(text, new Date(System.currentTimeMillis()), tweetMoods);
-				saveInFile(tweet);
-				selectedMoods.clear();	// reset all modes associated with this tweet
-				finish();
+			}
+		});
 
+
+		Button clearButton = (Button) findViewById(R.id.clear);
+		clearButton.setOnClickListener(new View.OnClickListener() {
+
+			public void onClick(View v) {
+				setResult(RESULT_OK);
+				tweets.clear();
+				saveInFile();
+				adapter.notifyDataSetChanged();
 			}
 		});
 	}
@@ -80,88 +72,52 @@ public class LonelyTwitterActivity extends Activity {
 	protected void onStart() {
 		// TODO Auto-generated method stub
 		super.onStart();
-		String[] tweets = loadFromFile();
-		ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
+		loadFromFile();
+		adapter = new ArrayAdapter<Tweet>(this,
 				R.layout.list_item, tweets);
 		oldTweetsList.setAdapter(adapter);
 	}
 
-	private String[] loadFromFile() {
-		ArrayList<String> tweets = new ArrayList<String>();
+	private void loadFromFile() {
 		try {
 			FileInputStream fis = openFileInput(FILENAME);
 			BufferedReader in = new BufferedReader(new InputStreamReader(fis));
-			String line = in.readLine();
-			while (line != null) {
-				tweets.add(line);
-				line = in.readLine();
-			}
 
+			Gson gson = new Gson();
+			Type listType = new TypeToken<ArrayList<NormalTweet>>(){}.getType();
+			tweets = gson.fromJson(in, listType);
+
+			in.close();
+			fis.close();
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			tweets = new ArrayList<Tweet>();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			throw new RuntimeException();
 		}
-		return tweets.toArray(new String[tweets.size()]);
 	}
 	
-	private void saveInFile(Tweet tweet) {
+	private void saveInFile() {
 		try {
 			FileOutputStream fos = openFileOutput(FILENAME,
-					Context.MODE_APPEND);
+					Context.MODE_PRIVATE);
 
-			fos.write(tweet.toString().getBytes());
+			OutputStreamWriter writer = new OutputStreamWriter(fos);
+
+			Gson gson = new Gson();
+			gson.toJson(tweets, writer);
+
+			writer.flush();
+			writer.close();
 			fos.close();
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			throw new RuntimeException();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			throw new RuntimeException();
 		}
-	}
-
-	/**
-	 * Initialize the list containing the moods
-	 */
-	private void initializeMoods(){
-
-		MOOD_BASE_LIST = new ArrayList<MoodBase>();
-		MOOD_BASE_LIST.add(new MoodOne());
-		MOOD_BASE_LIST.add(new MoodTwo());
-
-		selectedMoods = new ArrayList<Long>();
-
-		// Add description of each mood to the selectable list of moods
-		String[] moodArray = new String[MOOD_BASE_LIST.size()];
-		for (int i = 0; i < MOOD_BASE_LIST.size(); i++)
-			moodArray[i] = MOOD_BASE_LIST.get(i).getRepresentation();
-		ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
-				R.layout.list_item, moodArray);
-		moodsListView.setAdapter(adapter);
-
-		// Handle selecting a mood
-		moodsListView.setOnItemClickListener(new ListView.OnItemClickListener(){
-			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
-				TextView text = (TextView)view;
-
-				if (selectedMoods.contains(id)) {
-					selectedMoods.remove(id);
-					// Unselect text and change colour
-					text.setTextColor(Color.GRAY);
-				}
-				else {
-					selectedMoods.add(id);
-					// Colour the text green to signify that it is selected
-					text.setTextColor(Color.GREEN);
-				}
-
-			}
-		});
-
 	}
 
 }
