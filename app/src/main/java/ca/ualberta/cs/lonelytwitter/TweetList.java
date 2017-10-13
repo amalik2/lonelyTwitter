@@ -37,6 +37,7 @@ public class TweetList {
     }
 
     public boolean hasTweet(Tweet tweet){
+        // this method uses equals as the internal comparator
         return tweets.contains(tweet);
     }
 
