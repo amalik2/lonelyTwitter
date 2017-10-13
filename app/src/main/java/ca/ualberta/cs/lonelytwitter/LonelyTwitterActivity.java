@@ -110,7 +110,7 @@ public class LonelyTwitterActivity extends Activity {
 
 			BufferedWriter out = new BufferedWriter(new OutputStreamWriter(fos));
 			Gson gson = new Gson();
-			gson.toJson(tweets, out);
+			gson.toJson(tweets.getTweets(), out);
 			out.flush();
 
 			fos.close();

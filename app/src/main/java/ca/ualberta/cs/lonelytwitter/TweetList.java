@@ -21,7 +21,7 @@ public class TweetList {
         //if (hasTweet(tweet))
         //  throw new IllegalArgumentException();
         for (Tweet it : tweets){
-            if (it.getMessage() == tweet.getMessage())
+            if (it.getMessage().equals(tweet.getMessage()))
                 throw new IllegalArgumentException();
         }
         tweets.add(tweet);
@@ -37,11 +37,6 @@ public class TweetList {
     }
 
     public boolean hasTweet(Tweet tweet){
-        /*for (Tweet it : tweets){
-            if (it.equals(tweet))
-                return true;
-        }
-        return false;*/
         return tweets.contains(tweet);
     }
 
