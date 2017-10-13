@@ -21,17 +21,20 @@ public class TweetListTest extends ActivityInstrumentationTestCase2 {
         assertTrue(tweets.hasTweet(tweet));
     }
 
-    public void testGetTweet(){
+    public void testGetTweets(){
         TweetList tweets = new TweetList();
-        Tweet tweet = new NormalTweet("adding Tweet");
+        Tweet tweet = new NormalTweet("xyz");
         tweets.addTweet(tweet);
-        Tweet tweet2 = new NormalTweet("adding Tweet");
+        Tweet tweet2 = new NormalTweet("abc");
         tweets.addTweet(tweet2);
 
         List<Tweet> tweetsList = tweets.getTweets();
         assertTrue(tweets.getCount() == tweetsList.size());
         for (Tweet it : tweetsList)
             assertTrue(tweets.hasTweet(it));
+
+        // reorder due to sort
+        assertTrue(tweetsList.get(0) == tweet2);
     }
 
     public void testGetCount(){
@@ -63,5 +66,13 @@ public class TweetListTest extends ActivityInstrumentationTestCase2 {
         assertTrue(tweets.hasTweet(tweet));
         tweets.delete(tweet);
         assertFalse(tweets.hasTweet(tweet));
+    }
+
+    public void testGetTweet(){
+        TweetList tweets = new TweetList();
+        Tweet tweet = new NormalTweet("adding Tweet");
+        tweets.addTweet(tweet);
+        Tweet returnedTweet = tweets.getTweet(0);
+        assertEquals(tweet.getMessage(), returnedTweet.getMessage());
     }
 }

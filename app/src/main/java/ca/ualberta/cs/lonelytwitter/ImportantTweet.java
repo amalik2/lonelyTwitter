@@ -13,6 +13,7 @@ public class ImportantTweet extends Tweet implements Tweetable {
         return true;
     }
 
+    @Override
     public String getMessage() {
         return "IMPORTANT!! " + this.message;
     }

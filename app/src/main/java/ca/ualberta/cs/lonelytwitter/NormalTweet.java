@@ -13,6 +13,7 @@ public class NormalTweet extends Tweet implements Tweetable {
         return false;
     }
 
+    @Override
     public String getMessage() {
         return this.message;
     }

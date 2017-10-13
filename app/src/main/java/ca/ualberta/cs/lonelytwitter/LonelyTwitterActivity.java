@@ -32,7 +32,8 @@ public class LonelyTwitterActivity extends Activity {
 	private EditText bodyText;
 	private ListView oldTweetsList;
 
-	private ArrayList<Tweet> tweets = new ArrayList<Tweet>();
+	//private ArrayList<Tweet> tweets = new ArrayList<Tweet>();
+	private TweetList tweets;
 	private ArrayAdapter<Tweet> adapter;
 
 	/** Called when the activity is first created. */
@@ -40,6 +41,8 @@ public class LonelyTwitterActivity extends Activity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main);
+
+		tweets = new TweetList();
 
 		bodyText = (EditText) findViewById(R.id.body);
 		Button saveButton = (Button) findViewById(R.id.save);
@@ -52,9 +55,14 @@ public class LonelyTwitterActivity extends Activity {
 				String text = bodyText.getText().toString();
 				Tweet newestTweet = new NormalTweet(text);
 
-				tweets.add(newestTweet);
-				adapter.notifyDataSetChanged();
-				saveInFile();
+				try {
+					tweets.addTweet(newestTweet);
+					adapter.notifyDataSetChanged();
+					saveInFile();
+				} catch (IllegalArgumentException ex){
+
+				}
+
 //				finish();
 
 			}
@@ -67,7 +75,7 @@ public class LonelyTwitterActivity extends Activity {
 		super.onStart();
 		loadFromFile();
 		adapter = new ArrayAdapter<Tweet>(this,
-				R.layout.list_item, tweets);
+				R.layout.list_item, tweets.getTweets());
 		oldTweetsList.setAdapter(adapter);
 	}
 
@@ -79,14 +87,18 @@ public class LonelyTwitterActivity extends Activity {
 			Gson gson = new Gson();
 			// Took from https://google-gson.googlecode.com/svn/trunk/gson/docs/javadocs/com/google/gson/Gson.html Jan-21-2016
 			Type listType = new TypeToken<ArrayList<NormalTweet>>() {}.getType();
-			tweets = gson.fromJson(in, listType);
+			ArrayList<Tweet> list = gson.fromJson(in, listType);
+			for (Tweet tweet : list){
+				tweets.addTweet(tweet);
+			}
 
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
-			tweets = new ArrayList<Tweet>();
-		} catch (IOException e) {
+			tweets = new TweetList();
+		} catch (Exception e) {
 			// TODO Auto-generated catch block
-			throw new RuntimeException();
+			tweets = new TweetList();
+			//throw new RuntimeException();
 		}
 
 	}
