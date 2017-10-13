@@ -25,14 +25,14 @@ public class TweetList {
                 throw new IllegalArgumentException();
         }
         tweets.add(tweet);
-    }
-
-    public List<Tweet> getTweets(){
         Collections.sort(tweets, new Comparator<Tweet>() {
             public int compare(final Tweet object1, final Tweet object2) {
                 return object1.getMessage().compareTo(object2.getMessage());
             }
         });
+    }
+
+    public List<Tweet> getTweets(){
         return tweets;
     }
 
