@@ -36,6 +36,10 @@ public class LonelyTwitterActivity extends Activity {
 	private ArrayList<Tweet> tweets = new ArrayList<Tweet>();
 	private ArrayAdapter<Tweet> adapter;
 
+	public ListView getOldTweetsList(){
+		return oldTweetsList;
+	}
+
 	/** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -75,11 +79,10 @@ public class LonelyTwitterActivity extends Activity {
 
 		oldTweetsList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-				//System.out.println(position);
 				Intent intent = new Intent(LonelyTwitterActivity.this, EditTweetActivity.class);
-				//intent.putExtra(EditTweetActivity.ID_NAME, tweets.get(position).getMessage());
-				//intent.putExtra(EditTweetActivity.ID_INDEX, position);
-				startActivity(intent);
+				intent.putExtra(EditTweetActivity.ID_NAME, tweets.get(position).getMessage());
+				intent.putExtra(EditTweetActivity.ID_INDEX, position);
+				startActivityForResult(intent, EDIT_CODE);
 			}
 		});
 	}
@@ -144,9 +147,10 @@ public class LonelyTwitterActivity extends Activity {
 
 				String msg = data.getStringExtra(EditTweetActivity.ID_NAME);
 				int index = data.getIntExtra(EditTweetActivity.ID_INDEX, 0);
-
 				tweets.get(index).setMessage(msg);
+				saveInFile();
 				adapter.notifyDataSetChanged();
+
 			}
 
 		}
