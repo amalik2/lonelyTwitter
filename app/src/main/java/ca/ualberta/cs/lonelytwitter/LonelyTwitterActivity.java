@@ -13,8 +13,10 @@ import java.util.Date;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -24,6 +26,8 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
 public class LonelyTwitterActivity extends Activity {
+
+	private static final int EDIT_CODE = 0;
 
 	private static final String FILENAME = "file.sav";
 	private EditText bodyText;
@@ -62,8 +66,20 @@ public class LonelyTwitterActivity extends Activity {
 			public void onClick(View v) {
 				setResult(RESULT_OK);
 				tweets.clear();
-				saveInFile();
+				//saveInFile();
+				deleteFile(FILENAME);
+				bodyText.setText("");
 				adapter.notifyDataSetChanged();
+			}
+		});
+
+		oldTweetsList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+				//System.out.println(position);
+				Intent intent = new Intent(LonelyTwitterActivity.this, EditTweetActivity.class);
+				//intent.putExtra(EditTweetActivity.ID_NAME, tweets.get(position).getMessage());
+				//intent.putExtra(EditTweetActivity.ID_INDEX, position);
+				startActivity(intent);
 			}
 		});
 	}
@@ -119,5 +135,22 @@ public class LonelyTwitterActivity extends Activity {
 			throw new RuntimeException();
 		}
 	}
+
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+
+		if (requestCode == EDIT_CODE) {
+			if (resultCode == RESULT_OK) {
+
+				String msg = data.getStringExtra(EditTweetActivity.ID_NAME);
+				int index = data.getIntExtra(EditTweetActivity.ID_INDEX, 0);
+
+				tweets.get(index).setMessage(msg);
+				adapter.notifyDataSetChanged();
+			}
+
+		}
+	}
+
 
 }
